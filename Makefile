@@ -1,17 +1,21 @@
-CONFIG_DIR := $(HOME)/.config/niri
+CONFIG_DIR := $(HOME)/.config
 
-.PHONY: install pull diff
+.PHONY: sync sync_niri sync_noctalia sync_target pull diff
 
-# Copy repo config OUT to ~/.config/niri (deploy)
-install:
-	mkdir -p $(CONFIG_DIR)
-	cp -r niri/* $(CONFIG_DIR)/
-	@echo "Installed niri config to $(CONFIG_DIR)"
+# Copy repo config OUT to ~/.config/<dir> (deploy)
+sync: sync_niri sync_noctalia
 
-pull:
-	cp -r $(CONFIG_DIR)/* niri/
-	@echo "Pulled live niri config into repo — review with 'git diff' before committing"
+sync_niri:
+	@$(MAKE) sync_target DIR=niri
 
-# Show what differs between repo and live config
+sync_noctalia:
+	@$(MAKE) sync_target DIR=noctalia
+
+sync_target:
+	mkdir -p $(CONFIG_DIR)/$(DIR)
+	cp -r $(DIR)/* $(CONFIG_DIR)/$(DIR)/
+	@echo "Installed $(DIR) config to $(CONFIG_DIR)/$(DIR)"
+
 diff:
-	@diff -rq niri $(CONFIG_DIR) || true
+	@diff -rq niri $(CONFIG_DIR)/niri || true
+	@diff -rq noctalia $(CONFIG_DIR)/noctalia || true
