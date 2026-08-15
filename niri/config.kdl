@@ -40,7 +40,8 @@ input {
         // accel-profile "flat"
         // scroll-method "two-finger"
         // disabled-on-external-mouse
-	// tap-button-map "left-right-middle" // two finger tap = right click
+	tap-button-map "left-right-middle" // two finger tap = right click
+	click-method "clickfinger" // 2-finger physical click = right click, anywhere on the pad
     }
 
     mouse {
