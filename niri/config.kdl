@@ -314,11 +314,13 @@ window-rule {
 window-rule {
     match app-id="^code$"
     open-on-output "DP-1"
+    open-maximized-to-edges true
 }
 
 window-rule {
     match app-id=r#"^dev\.zed\.Zed$"#
     open-on-output "DP-1"
+    open-maximized-to-edges true
 }
 
 // Browsers -> left (DP-3)
