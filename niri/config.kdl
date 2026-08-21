@@ -36,7 +36,7 @@ input {
         dwtp // disables trackpoint while typing
         // drag false
         // drag-lock
-        // accel-speed 0.2
+        accel-speed 0.2
         // accel-profile "flat"
         // scroll-method "two-finger"
         // disabled-on-external-mouse
