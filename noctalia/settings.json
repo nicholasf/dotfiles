@@ -333,7 +333,7 @@
         "backgroundOpacity": 1,
         "colorizeIcons": false,
         "deadOpacity": 0.6,
-        "displayMode": "always_visible",
+        "displayMode": "auto_hide",
         "dockType": "floating",
         "enabled": true,
         "floatingRatio": 1,
