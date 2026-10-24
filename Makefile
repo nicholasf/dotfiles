@@ -1,6 +1,6 @@
 CONFIG_DIR := $(HOME)/.config
 
-SYNC_DIRS := niri noctalia tmux
+SYNC_DIRS := niri noctalia nvim tmux
 
 TO_LOCAL_TARGETS := $(addprefix to_local_,$(SYNC_DIRS))
 FROM_LOCAL_TARGETS := $(addprefix from_local_,$(SYNC_DIRS))
@@ -19,7 +19,7 @@ to_local_%:
 # Copy live config IN from ~/.config/<dir> to repo (capture local changes for commit)
 from_local: $(FROM_LOCAL_TARGETS)
 
-FROM_LOCAL_EXCLUDES := --exclude=dms --exclude=README.md --exclude=plugins
+FROM_LOCAL_EXCLUDES := --exclude=dms --exclude=README.md --exclude=/plugins
 
 from_local_%:
 	rsync -a $(FROM_LOCAL_EXCLUDES) $(CONFIG_DIR)/$*/ $*/
