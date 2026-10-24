@@ -6,7 +6,7 @@ TO_LOCAL_TARGETS := $(addprefix to_local_,$(SYNC_DIRS))
 FROM_LOCAL_TARGETS := $(addprefix from_local_,$(SYNC_DIRS))
 DIFF_TARGETS := $(addprefix diff_,$(SYNC_DIRS))
 
-.PHONY: to_local from_local diff tpm
+.PHONY: to_local from_local diff tpm deps_fedora setup_fedora deps_ubuntu setup_ubuntu neovim_fedora neovim_ubuntu lazyvim
 
 # Copy repo config OUT to ~/.config/<dir> (deploy)
 to_local: $(TO_LOCAL_TARGETS)
@@ -38,4 +38,40 @@ tpm:
 		echo "tpm already installed at $(TPM_DIR)"; \
 	else \
 		git clone https://github.com/tmux-plugins/tpm $(TPM_DIR); \
+	fi
+
+# Base packages (Fedora). Noctalia/Quickshell is not installed here.
+DEPS := git rsync tmux niri
+
+deps_fedora:
+	sudo dnf install -y $(DEPS)
+
+# Bootstrap a new machine: packages, configs, then tpm
+setup_fedora: deps_fedora neovim_fedora lazyvim to_local tpm
+	@echo "Setup complete. Start tmux and press prefix + I to install plugins."
+
+# Ubuntu equivalents. niri and Noctalia/Quickshell are not installed here.
+DEPS_UBUNTU := git rsync tmux
+
+deps_ubuntu:
+	sudo apt-get update
+	sudo apt-get install -y $(DEPS_UBUNTU)
+
+setup_ubuntu: deps_ubuntu neovim_ubuntu lazyvim to_local tpm
+	@echo "Setup complete. Start tmux and press prefix + I to install plugins."
+
+# Neovim
+neovim_fedora:
+	sudo dnf install -y neovim
+
+# Needs a release whose apt neovim is new enough for LazyVim (check: apt-cache policy neovim)
+neovim_ubuntu:
+	sudo apt-get install -y neovim
+
+# LazyVim starter (distro-independent). Skips if ~/.config/nvim exists; run nvim once to bootstrap plugins.
+lazyvim:
+	@if [ -e $(CONFIG_DIR)/nvim ]; then \
+		echo "$(CONFIG_DIR)/nvim already exists, skipping LazyVim starter"; \
+	else \
+		git clone https://github.com/LazyVim/starter $(CONFIG_DIR)/nvim && rm -rf $(CONFIG_DIR)/nvim/.git; \
 	fi
