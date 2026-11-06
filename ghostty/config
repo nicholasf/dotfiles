@@ -1,0 +1,3 @@
+# Iosevka Term Nerd Font: install with `make iosevka`.
+font-family = IosevkaTerm Nerd Font
+font-size = 13

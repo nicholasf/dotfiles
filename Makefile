@@ -1,12 +1,12 @@
 CONFIG_DIR := $(HOME)/.config
 
-SYNC_DIRS := niri noctalia nvim tmux
+SYNC_DIRS := ghostty niri noctalia nvim tmux
 
 TO_LOCAL_TARGETS := $(addprefix to_local_,$(SYNC_DIRS))
 FROM_LOCAL_TARGETS := $(addprefix from_local_,$(SYNC_DIRS))
 DIFF_TARGETS := $(addprefix diff_,$(SYNC_DIRS))
 
-.PHONY: to_local from_local diff tpm deps_fedora setup_fedora deps_ubuntu setup_ubuntu neovim_fedora neovim_ubuntu lazyvim noctalia_fedora niri_ubuntu noctalia_ubuntu
+.PHONY: to_local from_local diff tpm deps_fedora setup_fedora deps_ubuntu setup_ubuntu neovim_fedora neovim_ubuntu lazyvim noctalia_fedora niri_ubuntu noctalia_ubuntu iosevka
 
 # Copy repo config OUT to ~/.config/<dir> (deploy)
 to_local: $(TO_LOCAL_TARGETS)
@@ -41,23 +41,23 @@ tpm:
 	fi
 
 # Base packages (Fedora)
-DEPS := git rsync tmux niri
+DEPS := git rsync tmux niri curl xz fontconfig
 
 deps_fedora:
 	sudo dnf install -y $(DEPS)
 
 # Bootstrap a new machine: packages, configs, then tpm
-setup_fedora: deps_fedora noctalia_fedora neovim_fedora lazyvim to_local tpm
+setup_fedora: deps_fedora noctalia_fedora neovim_fedora lazyvim iosevka to_local tpm
 	@echo "Setup complete. Start tmux and press prefix + I to install plugins."
 
 # Ubuntu 24.04 (noble) equivalents
-DEPS_UBUNTU := git rsync tmux curl software-properties-common build-essential
+DEPS_UBUNTU := git rsync tmux curl xz-utils fontconfig software-properties-common build-essential
 
 deps_ubuntu:
 	sudo apt-get update
 	sudo apt-get install -y $(DEPS_UBUNTU)
 
-setup_ubuntu: deps_ubuntu niri_ubuntu noctalia_ubuntu neovim_ubuntu lazyvim to_local tpm
+setup_ubuntu: deps_ubuntu niri_ubuntu noctalia_ubuntu neovim_ubuntu lazyvim iosevka to_local tpm
 	@echo "Setup complete. Start tmux and press prefix + I to install plugins."
 
 # Neovim
@@ -69,6 +69,21 @@ neovim_ubuntu:
 	sudo add-apt-repository -y ppa:neovim-ppa/unstable
 	sudo apt-get update
 	sudo apt-get install -y neovim
+
+# Iosevka Term Nerd Font (distro-independent; neither distro packages it). Nerd Font patched so
+# LazyVim's icons render in any terminal. Skips if already installed; delete FONT_DIR to update.
+FONT_DIR := $(HOME)/.local/share/fonts/IosevkaTermNerdFont
+
+iosevka:
+	@if [ -d $(FONT_DIR) ]; then \
+		echo "Iosevka Term Nerd Font already installed at $(FONT_DIR)"; \
+	else \
+		mkdir -p $(FONT_DIR) && \
+		curl -fL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/IosevkaTerm.tar.xz \
+			| tar -xJ -C $(FONT_DIR) --wildcards '*.ttf' && \
+		fc-cache -f $(FONT_DIR) && \
+		echo "Installed Iosevka Term Nerd Font to $(FONT_DIR)"; \
+	fi
 
 # LazyVim starter (distro-independent). Skips if ~/.config/nvim exists; run nvim once to bootstrap plugins.
 lazyvim:
